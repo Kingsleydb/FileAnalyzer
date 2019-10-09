@@ -6,6 +6,9 @@ import java.nio.file.Paths;
 import java.util.*;
 
 class FileAnalyzer {
+
+    private String mostUsedWord = "";
+
     public static void main(String[] args) {
         String content = "";
         int wordCount = 0;
@@ -15,21 +18,17 @@ class FileAnalyzer {
             File file = new File(args[0]);        
 
             content = readAllBytesJava7(file.getAbsolutePath());
-            // wordCount = getWordCount(content);
+            wordCount = getWordCount(content);
             freqWords = getFreqWords(content);
 
-            // System.out.println("Word count is: " + wordCount);
         }
         else {
-            System.out.println("No file detected");
+            System.out.println("Include file as first argument in command line");
         }
     }
 
     public static int getWordCount (String content){
         String words [] = content.split("\\s+|[\\r?\\n]+");
-        for (String word : words){
-            System.out.println( "--->" + word);
-        }
         return words.length;
     } 
 
@@ -37,10 +36,9 @@ class FileAnalyzer {
         Hashtable<String, Integer> wordsDict = new Hashtable<String, Integer>();
         String words [] = content.split("\\.|,|:|\"|\\s+|[\\r?\\n]+");
         for (String word : words){
-            // eliminate empty entries
-            if (word != ""){
+            // eliminate empty elements from two sequential delimiters
+            if (word.length() > 0){
                 word = word.toLowerCase();
-                // first entry into dictionary
                 if (!wordsDict.containsKey(word)){
                     wordsDict.put(word,1);
                 }
@@ -48,17 +46,21 @@ class FileAnalyzer {
                     wordsDict.put(word, wordsDict.get(word) + 1);
                 }
             }
+            // TODO: SORT DATA BY VALUE, PRINT TOP 10
+            // TODO: REMEMBER TO SET MOST USED WORD
         }
-        
         return "";
     }
 
     // todo
     // public static String getLineWithFreqWord (String content){
-
+        
     // }
 
-    // https://howtodoinjava.com/java/io/java-read-file-to-string-examples/
+    private String getMostUsedWord(){
+        return mostUsedWord;
+    }
+
     private static String readAllBytesJava7(String filePath){
         String content = "";
         try
