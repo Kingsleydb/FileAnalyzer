@@ -7,70 +7,118 @@ import java.util.*;
 
 class FileAnalyzer {
 
-    private String mostUsedWord = "";
-
     public static void main(String[] args) {
-        String content = "";
-        int wordCount = 0;
-        String freqWords = "";
+        String fileContent = "";
+        MostCommonWord mCW = new MostCommonWord();
 
         if (args.length > 0){
-            File file = new File(args[0]);        
+            File file = new File(args[0]);
 
-            content = readAllBytesJava7(file.getAbsolutePath());
-            wordCount = getWordCount(content);
-            freqWords = getFreqWords(content);
-
+            fileContent = readAllBytesJava7(file.getAbsolutePath());
+            printWordCount(fileContent);
+            printFreqWords(fileContent, mCW);
+            printLastLineWithMCW(fileContent, mCW);
+            
         }
+
         else {
             System.out.println("Include file as first argument in command line");
         }
     }
 
-    public static int getWordCount (String content){
-        String words [] = content.split("\\s+|[\\r?\\n]+");
-        return words.length;
+    public static void printWordCount (String fileContent){
+        String words [] = fileContent.split("\\s+|[\\r?\\n]+");
+        System.out.println("Total number of words in file: " + words.length);
     } 
 
-    public static String getFreqWords (String content){
-        Hashtable<String, Integer> wordsDict = new Hashtable<String, Integer>();
-        String words [] = content.split("\\.|,|:|\"|\\s+|[\\r?\\n]+");
+    public static void printFreqWords (String fileContent, MostCommonWord mCW){
+        HashMap<String, Integer> wordsMap = new HashMap<String, Integer>();
+        int entriesToPrint = 10;
+
+        String words [] = fileContent.split("\\.|,|:|\"|\\s+|[\\r?\\n]+");
         for (String word : words){
-            // eliminate empty elements from two sequential delimiters
-            if (word.length() > 0){
+            if (word.length() > 0){ // eliminate empty elements from two sequential delimiters
                 word = word.toLowerCase();
-                if (!wordsDict.containsKey(word)){
-                    wordsDict.put(word,1);
+                if (!wordsMap.containsKey(word)){
+                    wordsMap.put(word,1);
                 }
                 else {
-                    wordsDict.put(word, wordsDict.get(word) + 1);
+                    wordsMap.put(word, wordsMap.get(word) + 1);
                 }
             }
-            // TODO: SORT DATA BY VALUE, PRINT TOP 10
-            // TODO: REMEMBER TO SET MOST USED WORD
         }
+
+        TreeMap<String, Integer> sortedMap = sortMapByValue(wordsMap);
+
+        System.out.println("Top 10 frequently used words with appearance count:");
+        for (Map.Entry<String, Integer> entry: sortedMap.entrySet()){
+            if (entriesToPrint > 0){
+                String key = entry.getKey();
+                Integer value = entry.getValue();
+                System.out.println(key + "-" + value);
+                entriesToPrint--;
+            }
+            else {
+                break;
+            }
+        }
+
+        mCW.setMostCommonWord(sortedMap.firstEntry().getKey());
+        return;
+    }
+
+    public static String printLastLineWithMCW (String fileContent, MostCommonWord mCW){
         return "";
     }
 
-    // todo
-    // public static String getLineWithFreqWord (String content){
-        
-    // }
-
-    private String getMostUsedWord(){
-        return mostUsedWord;
+    private static TreeMap<String, Integer> sortMapByValue(HashMap<String, Integer> map){
+        Comparator<String> comparator = new ValueComparator(map);
+        TreeMap<String, Integer> result = new TreeMap<String, Integer>(comparator);
+        result.putAll(map);
+        return result;
     }
 
     private static String readAllBytesJava7(String filePath){
-        String content = "";
-        try
-        {
-            content = new String ( Files.readAllBytes( Paths.get(filePath) ) );
+        String fileContent = "";
+        try {
+            fileContent = new String ( Files.readAllBytes( Paths.get(filePath) ) );
         }
-        catch (IOException e)
-        {
+        catch (IOException e) {
             e.printStackTrace();
         }
-        return content;
+        return fileContent;
+    }
+}
+
+class ValueComparator implements Comparator<String>{
+
+    HashMap<String, Integer> map = new HashMap<String, Integer>();
+ 
+    public ValueComparator(HashMap<String, Integer> map){
+        this.map.putAll(map);
+    }
+ 
+    @Override
+    public int compare(String s1, String s2) {
+        if (map.get(s1) >= map.get(s2)){
+            return -1;
+        } else {
+            return 1;
+        }   
+    }
+}
+
+class MostCommonWord {
+    public String mostCommonWord;
+
+    public MostCommonWord() {
+        mostCommonWord = "";
+    }
+    public void setMostCommonWord(String word){
+        mostCommonWord = word;
+    }
+
+    public String getMostCommonWord(){
+        return mostCommonWord;
     }
 }
