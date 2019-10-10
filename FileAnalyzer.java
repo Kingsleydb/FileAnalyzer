@@ -9,16 +9,17 @@ class FileAnalyzer {
 
     public static void main(String[] args) {
         String fileContent = "";
-        MostCommonWord mCW = new MostCommonWord();
+        TreeMap<String, Integer> sortedWordMap = new TreeMap<String, Integer>();
 
         if (args.length > 0){
             File file = new File(args[0]);
 
             fileContent = readAllBytesJava7(file.getAbsolutePath());
+
             printWordCount(fileContent);
-            printFreqWords(fileContent, mCW);
-            printLastLineWithMCW(fileContent, mCW);
-            
+            sortedWordMap = getSortedWords(fileContent);
+            printTop10(sortedWordMap);
+            // printLastLineWithMCW(fileContent, sortedWordMap);
         }
 
         else {
@@ -31,7 +32,7 @@ class FileAnalyzer {
         System.out.println("Total number of words in file: " + words.length);
     } 
 
-    public static void printFreqWords (String fileContent, MostCommonWord mCW){
+    private static TreeMap<String, Integer> getSortedWords (String fileContent){
         HashMap<String, Integer> wordsMap = new HashMap<String, Integer>();
         int entriesToPrint = 10;
 
@@ -50,25 +51,21 @@ class FileAnalyzer {
 
         TreeMap<String, Integer> sortedMap = sortMapByValue(wordsMap);
 
+        return sortedMap;
+    }
+
+    public static void printTop10(TreeMap <String, Integer> sortedMap){
         System.out.println("Top 10 frequently used words with appearance count:");
-        for (Map.Entry<String, Integer> entry: sortedMap.entrySet()){
+        int entriesToPrint = 10;
+        for (SortedMap.Entry<String, Integer> entry: sortedMap.entrySet()){
             if (entriesToPrint > 0){
-                String key = entry.getKey();
-                Integer value = entry.getValue();
-                System.out.println(key + "-" + value);
+                System.out.println(entry.getKey() + " " + entry.getValue());
                 entriesToPrint--;
             }
             else {
                 break;
             }
         }
-
-        mCW.setMostCommonWord(sortedMap.firstEntry().getKey());
-        return;
-    }
-
-    public static String printLastLineWithMCW (String fileContent, MostCommonWord mCW){
-        return "";
     }
 
     private static TreeMap<String, Integer> sortMapByValue(HashMap<String, Integer> map){
@@ -105,20 +102,5 @@ class ValueComparator implements Comparator<String>{
         } else {
             return 1;
         }   
-    }
-}
-
-class MostCommonWord {
-    public String mostCommonWord;
-
-    public MostCommonWord() {
-        mostCommonWord = "";
-    }
-    public void setMostCommonWord(String word){
-        mostCommonWord = word;
-    }
-
-    public String getMostCommonWord(){
-        return mostCommonWord;
     }
 }
