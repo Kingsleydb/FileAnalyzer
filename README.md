@@ -5,4 +5,5 @@ Prints total word count, top 10 words used with appearance count, and last occur
 To use at command line: 
 
 javac FileAnalyzer.java
+
 java -cp . FileAnalyzer passage.txt
