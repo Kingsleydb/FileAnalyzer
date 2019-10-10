@@ -1,6 +1,6 @@
 # FileAnalyzer
 
-Prints total word count, top 10 words used, and sentence that contains the most used word of a .txt file
+Prints total word count, top 10 words used with appearance count, and last occuring sentence that contains the most frequently used word of a .txt file
 
 To use at command line: 
 
