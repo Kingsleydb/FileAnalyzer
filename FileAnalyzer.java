@@ -34,7 +34,6 @@ class FileAnalyzer {
 
     private static TreeMap<String, Integer> getSortedWords (String fileContent){
         HashMap<String, Integer> wordsMap = new HashMap<String, Integer>();
-        int entriesToPrint = 10;
 
         String words [] = fileContent.split("\\.|,|:|\"|\\s+|[\\r?\\n]+");
         for (String word : words){
@@ -48,7 +47,7 @@ class FileAnalyzer {
                 }
             }
         }
-
+        
         TreeMap<String, Integer> sortedMap = sortMapByValue(wordsMap);
 
         return sortedMap;
