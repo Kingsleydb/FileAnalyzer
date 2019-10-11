@@ -17,8 +17,11 @@ class FileAnalyzer {
             fileContent = readAllBytesJava7(file.getAbsolutePath());
 
             printWordCount(fileContent);
+
+            // sorted by value in descending order. Words are keys, appearance count are values.
             sortedWordMap = getSortedWords(fileContent);
-            printTop10(sortedWordMap);
+
+            printTop10Words(sortedWordMap);
             printLastLineWithMostUsedWord(fileContent, sortedWordMap.firstEntry().getKey());
         }
 
@@ -28,11 +31,12 @@ class FileAnalyzer {
     }
 
     public static void printWordCount (String fileContent){
+        fileContent.trim(); // if file contains only spaces
         String words [] = fileContent.split("\\s+"); // split at spaces
         System.out.println("Word count in file:\n" + words.length + "\n");
     } 
 
-    public static void printTop10(TreeMap <String, Integer> sortedMap){
+    public static void printTop10Words(TreeMap <String, Integer> sortedMap){
         System.out.println("Top 10 frequently used words with appearance count:");
         int entriesToPrint = 10;
         for (SortedMap.Entry<String, Integer> entry: sortedMap.entrySet()){
@@ -47,22 +51,24 @@ class FileAnalyzer {
         }
     }
 
+    // Prints the last line in the file that contains the most commonly used word 
     public static void printLastLineWithMostUsedWord(String fileContent, String mostCommonWord){
         String sentences [] = fileContent.split("!+|\\.+|[\\r?\\n]+"); // split at ! . endl
         List<String> sentenceList;
 
-        // remove leading spaces
         for (int i = 0; i < sentences.length; i++){
             sentences[i] = sentences[i].trim();
         }
 
         sentenceList = Arrays.asList(sentences);
-        Collections.reverse(sentenceList);
+        Collections.reverse(sentenceList); // sentences towards end of file are examined first
 
+        // for every sentence in the file, create a word set
         for (String sentence : sentenceList){
             if (sentence.length() > 0){
                 String words [] = sentence.split("\\s|,|:|\""); // split at spaces , : "
 
+                // standardize keys for word set
                 for (int i = 0; i < words.length; i++){
                     String word = words[i];
                     word = word.toLowerCase();
@@ -79,10 +85,12 @@ class FileAnalyzer {
         }
     }
 
+    // sortedMap sorted by descending values. Words as keys, appearance count as values.
     private static TreeMap<String, Integer> getSortedWords (String fileContent){
         HashMap<String, Integer> wordsMap = new HashMap<String, Integer>();
 
         String words [] = fileContent.split("\\.|,|:|\"|\\s+|[\\r?\\n]+"); // split at . , : spaces endl "
+
         for (String word : words){
             if (word.length() > 0){ // eliminate empty elements from two sequential delimiters
                 word = word.toLowerCase();
@@ -100,6 +108,7 @@ class FileAnalyzer {
         return sortedMap;
     }
 
+    // create a TreeMap that sorts in descending order by appearance count
     private static TreeMap<String, Integer> sortMapByValue(HashMap<String, Integer> map){
         Comparator<String> comparator = new ValueComparator(map);
         TreeMap<String, Integer> result = new TreeMap<String, Integer>(comparator);
@@ -107,10 +116,11 @@ class FileAnalyzer {
         return result;
     }
 
+    // returns a string of the content in the file
     private static String readAllBytesJava7(String filePath){
         String fileContent = "";
         try {
-            fileContent = new String ( Files.readAllBytes( Paths.get(filePath) ) );
+            fileContent = new String (Files.readAllBytes(Paths.get(filePath)));
         }
         catch (IOException e) {
             e.printStackTrace();
@@ -119,6 +129,8 @@ class FileAnalyzer {
     }
 }
 
+// ValueComparator establishes descending by value order for map creation
+// https://www.programcreek.com/2013/03/java-sort-map-by-value/
 class ValueComparator implements Comparator<String>{
     HashMap<String, Integer> map = new HashMap<String, Integer>();
  
