@@ -13,14 +13,12 @@ class FileAnalyzer {
 
         if (args.length > 0){
             File file = new File(args[0]);
+            fileContent = fileToString(file.getAbsolutePath());
 
-            fileContent = readAllBytesJava7(file.getAbsolutePath());
-
-            printWordCount(fileContent);
-
-            // sorted by value in descending order. Words are keys, appearance count are values.
+            // Sorted by value in descending order. Words are keys, appearance count are values.
             sortedWordMap = getSortedWords(fileContent);
 
+            printWordCount(fileContent);
             printTop10Words(sortedWordMap);
             printLastLineWithMostUsedWord(fileContent, sortedWordMap.firstEntry().getKey());
         }
@@ -85,7 +83,7 @@ class FileAnalyzer {
         }
     }
 
-    // sortedMap sorted by descending values. Words as keys, appearance count as values.
+    // Returns a sortedMap sorted by descending values. Words as keys, appearance count as values.
     private static TreeMap<String, Integer> getSortedWords (String fileContent){
         HashMap<String, Integer> wordsMap = new HashMap<String, Integer>();
 
@@ -117,7 +115,7 @@ class FileAnalyzer {
     }
 
     // returns a string of the content in the file
-    private static String readAllBytesJava7(String filePath){
+    private static String fileToString(String filePath){
         String fileContent = "";
         try {
             fileContent = new String (Files.readAllBytes(Paths.get(filePath)));
